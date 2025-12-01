@@ -1,20 +1,47 @@
 // Utility functions
 
-export async function loadModelsData(url, retries = 3, delay = 1000) {
+export async function loadModelsData(baseUrl = 'assets/data', retries = 3, delay = 1000) {
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Failed to load data: HTTP ${response.status} - ${response.statusText}`);
+            // Load all three JSON files in parallel
+            const [metadataResponse, nodesResponse, linksResponse] = await Promise.all([
+                fetch(`${baseUrl}/metadata.json`),
+                fetch(`${baseUrl}/nodes.json`),
+                fetch(`${baseUrl}/links.json`)
+            ]);
+
+            // Check if all responses are OK
+            if (!metadataResponse.ok) {
+                throw new Error(`Failed to load metadata: HTTP ${metadataResponse.status} - ${metadataResponse.statusText}`);
             }
-            
-            let data;
+            if (!nodesResponse.ok) {
+                throw new Error(`Failed to load nodes: HTTP ${nodesResponse.status} - ${nodesResponse.statusText}`);
+            }
+            if (!linksResponse.ok) {
+                throw new Error(`Failed to load links: HTTP ${linksResponse.status} - ${linksResponse.statusText}`);
+            }
+
+            // Parse all JSON responses
+            let metadata, nodes, links;
             try {
-                data = await response.json();
+                [metadata, nodes, links] = await Promise.all([
+                    metadataResponse.json(),
+                    nodesResponse.json(),
+                    linksResponse.json()
+                ]);
             } catch (parseError) {
-                throw new Error('Invalid JSON format in data file');
+                throw new Error('Invalid JSON format in one or more data files');
             }
-            
+
+            // Merge the data into the expected format
+            const data = {
+                metadata: metadata,
+                categories: metadata.categories,
+                linkTypes: metadata.linkTypes,
+                nodes: nodes,
+                links: links
+            };
+
             return validateData(data);
         } catch (error) {
             console.error(`Error loading models data (attempt ${attempt}/${retries}):`, error);

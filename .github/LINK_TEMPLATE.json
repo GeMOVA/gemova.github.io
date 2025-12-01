@@ -1,0 +1,6 @@
+{
+    "source": "BaseModelID",
+    "target": "YourModelID",
+    "type": "improves-upon|variation-of|used-in|inspired-by|combines",
+    "description": "Brief explanation of the specific relationship (e.g., 'Adds attention mechanism to base model' or 'Uses as encoder component')"
+}

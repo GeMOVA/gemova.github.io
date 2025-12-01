@@ -1,0 +1,35 @@
+{
+    "id": "UniqueModelID",
+    "name": "Short Name",
+    "fullName": "Full Model Name",
+    "category": "VAE|GAN|Diffusion|Transformer|Flow|EBM",
+    "year": 2024,
+    "description": "One concise sentence: what problem does it solve and how? Include key technical approach.",
+    "mainIdea": "Technical explanation with equations (use LaTeX: \\mu, \\sigma, \\mathcal{L}, etc.). Explain the core innovation that makes this work.",
+    "keyContributions": [
+        "Primary novel contribution - be specific about what's new",
+        "Secondary contribution - architectural or methodological",
+        "Empirical achievement - metrics, benchmarks, or qualitative improvements"
+    ],
+    "papers": [
+        {
+            "title": "Exact Paper Title from Publication",
+            "authors": ["First Author", "Second Author", "et al."],
+            "year": 2024,
+            "url": "https://arxiv.org/abs/XXXX.XXXXX",
+            "venue": "Conference/Journal Name YYYY"
+        }
+    ],
+    "code": [
+        {
+            "language": "PyTorch|TensorFlow|JAX",
+            "url": "https://github.com/org/repo"
+        }
+    ],
+    "metrics": {
+        "citations": 0,
+        "influence": 1
+    },
+    "tags": ["keyword1", "keyword2", "max-5-tags"],
+    "size": 20
+}

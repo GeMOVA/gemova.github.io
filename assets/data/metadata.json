@@ -1,0 +1,65 @@
+{
+    "version": "1.1.0",
+    "lastUpdated": "2025-10-29",
+    "contributors": ["Mohamed El Baha & Fouad Oubari"],
+    "description": "Interactive database of generative AI models",
+    "categories": {
+        "VAE": {
+            "name": "Variational Autoencoders",
+            "color": "#3b82f6",
+            "description": "Models based on variational encoding"
+        },
+        "GAN": {
+            "name": "Generative Adversarial Networks",
+            "color": "#22c55e",
+            "description": "Models based on adversarial learning"
+        },
+        "Diffusion": {
+            "name": "Diffusion Models",
+            "color": "#f97316",
+            "description": "Models based on diffusion and denoising"
+        },
+        "Transformer": {
+            "name": "Transformer-based Models",
+            "color": "#a855f7",
+            "description": "Models based on Transformer architecture"
+        },
+        "Flow": {
+            "name": "Flow-based Models",
+            "color": "#2dd4bf",
+            "description": "Models based on normalizing flows"
+        },
+        "EBM": {
+            "name": "Energy-Based Models",
+            "color": "#ef4444",
+            "description": "Energy-based models"
+        }
+    },
+    "linkTypes": {
+        "improves-upon": {
+            "label": "Improves",
+            "color": "#6ee7b7",
+            "description": "Direct improvement of the previous model"
+        },
+        "variation-of": {
+            "label": "Variation of",
+            "color": "#fca5a5",
+            "description": "Variation or adaptation of the original model"
+        },
+        "used-in": {
+            "label": "Used in",
+            "color": "#c084fc",
+            "description": "Component used in another model"
+        },
+        "inspired-by": {
+            "label": "Inspired by",
+            "color": "#fde047",
+            "description": "Conceptual inspiration"
+        },
+        "combines": {
+            "label": "Combines",
+            "color": "#7dd3c0",
+            "description": "Combines multiple approaches"
+        }
+    }
+}

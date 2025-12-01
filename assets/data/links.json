@@ -1,0 +1,279 @@
+[
+    {
+        "source": "VAE",
+        "target": "Beta-VAE",
+        "type": "improves-upon",
+        "description": "Adds β parameter for disentanglement"
+    },
+    {
+        "source": "VAE",
+        "target": "VQ-VAE",
+        "type": "variation-of",
+        "description": "Replaces continuous latent space with discrete codebook"
+    },
+    {
+        "source": "VQ-VAE",
+        "target": "VQ-VAE-2",
+        "type": "improves-upon",
+        "description": "Adds hierarchy and autoregressive priors"
+    },
+    {
+        "source": "GAN",
+        "target": "DCGAN",
+        "type": "improves-upon",
+        "description": "Introduces convolutions and stabilizes training"
+    },
+    {
+        "source": "DCGAN",
+        "target": "StyleGAN",
+        "type": "improves-upon",
+        "description": "Revolutionary architecture with style control"
+    },
+    {
+        "source": "VAE",
+        "target": "StableDiffusion",
+        "type": "used-in",
+        "description": "VAE used for latent encoding/decoding"
+    },
+    {
+        "source": "DDPM",
+        "target": "StableDiffusion",
+        "type": "improves-upon",
+        "description": "Applies diffusion in latent space"
+    },
+    {
+        "source": "VAE",
+        "target": "CVAE",
+        "type": "variation-of",
+        "description": "Adds conditional variable for controlled generation"
+    },
+    {
+        "source": "VAE",
+        "target": "IWAE",
+        "type": "improves-upon",
+        "description": "Tightens ELBO via importance weighting"
+    },
+    {
+        "source": "VAE",
+        "target": "NVAE",
+        "type": "improves-upon",
+        "description": "Scales VAE architecture for high-resolution images"
+    },
+    {
+        "source": "VAE",
+        "target": "Diffusion-VAE",
+        "type": "combines",
+        "description": "Integrates diffusion into latent space"
+    },
+    {
+        "source": "GAN",
+        "target": "cGAN",
+        "type": "variation-of",
+        "description": "Adds conditional input"
+    },
+    {
+        "source": "cGAN",
+        "target": "Pix2Pix",
+        "type": "variation-of",
+        "description": "Supervised paired translation"
+    },
+    {
+        "source": "Pix2Pix",
+        "target": "CycleGAN",
+        "type": "improves-upon",
+        "description": "Enables unpaired translation"
+    },
+    {
+        "source": "GAN",
+        "target": "WGAN",
+        "type": "improves-upon",
+        "description": "Stabilizes training with Wasserstein loss"
+    },
+    {
+        "source": "WGAN",
+        "target": "WGAN-GP",
+        "type": "improves-upon",
+        "description": "Replaces weight clipping with gradient penalty"
+    },
+    {
+        "source": "DCGAN",
+        "target": "BigGAN",
+        "type": "improves-upon",
+        "description": "Scales architecture and adds class conditioning"
+    },
+    {
+        "source": "StyleGAN",
+        "target": "StyleGAN2",
+        "type": "improves-upon",
+        "description": "Removes artifacts and refines normalization"
+    },
+    {
+        "source": "DDPM",
+        "target": "ScoreModel",
+        "type": "variation-of",
+        "description": "Reformulates diffusion via score estimation"
+    },
+    {
+        "source": "ScoreModel",
+        "target": "GuidedDiffusion",
+        "type": "improves-upon",
+        "description": "Adds classifier-based conditioning"
+    },
+    {
+        "source": "StableDiffusion",
+        "target": "DALLE2",
+        "type": "inspired-by",
+        "description": "Uses CLIP embeddings for guidance"
+    },
+    {
+        "source": "DALLE2",
+        "target": "Imagen",
+        "type": "improves-upon",
+        "description": "Uses larger text encoder and better conditioning"
+    },
+    {
+        "source": "StableDiffusion",
+        "target": "SDXL",
+        "type": "improves-upon",
+        "description": "Upgraded version with modular components"
+    },
+    {
+        "source": "DDPM",
+        "target": "LCM",
+        "type": "improves-upon",
+        "description": "Faster generation via consistency training"
+    },
+    {
+        "source": "RealNVP",
+        "target": "Glow",
+        "type": "improves-upon",
+        "description": "Simplifies invertible layers using 1x1 convolutions"
+    },
+    {
+        "source": "Glow",
+        "target": "Flow++",
+        "type": "improves-upon",
+        "description": "Introduces variational dequantization"
+    },
+    {
+        "source": "VQ-VAE",
+        "target": "VQ-GAN",
+        "type": "improves-upon",
+        "description": "Adds adversarial loss to improve reconstruction quality"
+    },
+    {
+        "source": "StableDiffusion",
+        "target": "LCM",
+        "type": "improves-upon",
+        "description": "Accelerates diffusion process in latent space"
+    },
+    {
+        "source": "EBM-Score",
+        "target": "Diffusion-EBM",
+        "type": "improves-upon",
+        "description": "Incorporates diffusion noise levels into energy modeling"
+    },
+    {
+        "source": "ScoreModel",
+        "target": "EBM-Score",
+        "type": "inspired-by",
+        "description": "Score-based models share training objective with EBMs"
+    },
+    {
+        "source": "DDPM",
+        "target": "Diffusion-EBM",
+        "type": "combines",
+        "description": "Merges diffusion sampling with energy-based learning"
+    },
+    { "source": "MVAE", "target": "MMVAE", "type": "improves-upon", "description": "MoE avoids MVAE's veto effect" },
+    { "source": "MMVAE", "target": "MMVAE-mmJSD", "type": "improves-upon", "description": "Adds JSD posterior alignment" },
+    { "source": "MMVAE", "target": "MMVAE-Plus", "type": "improves-upon", "description": "Factorized latent space extension" },
+    { "source": "MMVAE-Plus", "target": "CMVAE", "type": "improves-upon", "description": "Mixture prior + diffusion decoder" },
+    { "source": "MMVAE-mmJSD", "target": "MoPoE", "type": "variation-of", "description": "Generalizes MoE/PoE aggregation" },
+    { "source": "MVAE", "target": "MoPoE", "type": "variation-of", "description": "Extends PoE into mixture-of-PoE" },
+    { "source": "MVAE", "target": "MVTCAE", "type": "variation-of", "description": "PoE + total correlation minimization" },
+    {
+    "source": "VAE",
+    "target": "MVAE",
+    "type": "variation-of",
+    "description": "Multimodal extension of the Variational Autoencoder using PoE aggregation"
+    },
+    {
+    "source": "MVAE",
+    "target": "MMVAE",
+    "type": "improves-upon",
+    "description": "Replaces PoE with MoE aggregation to address MVAE's veto effect"
+    },
+    {
+    "source": "VAE",
+    "target": "MMVAE",
+    "type": "variation-of",
+    "description": "Mixture-of-Experts multimodal extension of the VAE"
+    },
+    {
+    "source": "MMVAE",
+    "target": "MMVAE-mmJSD",
+    "type": "improves-upon",
+    "description": "Adds multi-distribution JSD regularization"
+    },
+    {
+    "source": "VAE",
+    "target": "MMVAE-mmJSD",
+    "type": "variation-of",
+    "description": "Enhanced multimodal VAE with JSD-based posterior alignment"
+    },
+    {
+    "source": "MVAE",
+    "target": "MoPoE",
+    "type": "variation-of",
+    "description": "Extends PoE into a mixture-of-PoE framework"
+    },
+    {
+    "source": "MMVAE",
+    "target": "MoPoE",
+    "type": "variation-of",
+    "description": "Generalizes MoE by combining PoE subsets"
+    },
+    {
+    "source": "VAE",
+    "target": "MoPoE",
+    "type": "variation-of",
+    "description": "Generalized multimodal ELBO extending VAE foundations"
+    },
+    {
+    "source": "MVAE",
+    "target": "MVTCAE",
+    "type": "improves-upon",
+    "description": "Adds total-correlation penalties to PoE aggregation"
+    },
+    {
+    "source": "VAE",
+    "target": "MVTCAE",
+    "type": "variation-of",
+    "description": "Multimodal VAE with PoE and information-theoretic regularization"
+    },
+    {
+    "source": "MMVAE",
+    "target": "MMVAE-Plus",
+    "type": "improves-upon",
+    "description": "Factorized latent space with shared and private variables"
+    },
+    {
+    "source": "VAE",
+    "target": "MMVAE-Plus",
+    "type": "variation-of",
+    "description": "Enhanced MMVAE with latent factorization for multimodal generation"
+    },
+    {
+    "source": "MMVAE-Plus",
+    "target": "CMVAE",
+    "type": "improves-upon",
+    "description": "Introduces mixture prior and diffusion decoder"
+    },
+    {
+    "source": "VAE",
+    "target": "CMVAE",
+    "type": "variation-of",
+    "description": "Clustered multimodal VAE with diffusion refinement"
+    }
+]

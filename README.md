@@ -8,13 +8,23 @@ git clone github/gemova
 
 ## 🧑‍🤝‍🧑 Contributing
 
-We welcome contributions!
-To add or update a model:
+**We actively welcome contributions from the research community!** GeMOVA's value comes from comprehensive, up-to-date coverage.
 
-- Fork the repository
-- Modify the JSON data or UI components
-- Submit a pull request with a clear explanation
-- You can also propose models via issues.
+### 🚀 Quick Start
+1. **Non-technical**: [Suggest a model via issue](https://github.com/GeMOVA/gemova.github.io/issues/new?template=add-model.md) - we'll add it for you
+2. **Technical**: See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guide
+
+### What to Contribute
+- ✅ Peer-reviewed generative models (NeurIPS, ICML, ICLR, CVPR, etc.)
+- ✅ Influential preprints (>500 citations)
+- ✅ Production systems (Stable Diffusion, DALL-E, etc.)
+- ✅ Corrections to existing entries
+- ✅ New relationships between models
+
+### Process
+1. Fork → Add to `assets/data/nodes.json` + `links.json` → Test → PR
+2. Review typically within 2-5 days
+3. All contributors credited in repository
 
 ## 🧾 License
 

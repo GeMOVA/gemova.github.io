@@ -120,6 +120,53 @@ body.light-mode .info-panel .bg-slate-800 {
     color: #475569 !important;
 }
 
+/* Fix text colors in light mode info panel */
+body.light-mode .info-panel .text-white {
+    color: #1e293b !important;
+}
+
+body.light-mode .info-panel .text-slate-300 {
+    color: #334155 !important;
+}
+
+body.light-mode .info-panel .text-slate-400 {
+    color: #475569 !important;
+}
+
+body.light-mode .info-panel .bg-slate-900\/50 {
+    background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+/* Fix lists and other text elements in light mode */
+body.light-mode .info-panel ul {
+    color: #475569 !important;
+}
+
+body.light-mode .info-panel li {
+    color: #475569 !important;
+}
+
+body.light-mode .info-panel .list-disc {
+    color: #475569 !important;
+}
+
+body.light-mode .info-panel a {
+    color: #0284c7 !important;
+}
+
+body.light-mode .info-panel a:hover {
+    color: #0369a1 !important;
+}
+
+/* Fix tag styles in light mode */
+body.light-mode .info-panel .bg-slate-800 {
+    background-color: #e2e8f0 !important;
+}
+
+body.light-mode .info-panel .text-slate-400 {
+    color: #475569 !important;
+}
+
 /* Close button styling */
 #close-panel {
     color: #94a3b8;

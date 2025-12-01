@@ -7,7 +7,7 @@ class GenerativeModelsApp {
         this.data = null;
         this.graph = null;
         this.config = {
-            dataUrl: 'assets/data/models.json',
+            dataBasePath: 'assets/data',
             defaultYear: 2024,
             animationDuration: 300
         };
@@ -19,9 +19,9 @@ class GenerativeModelsApp {
             // Show loading screen
             this.showLoading(true);
 
-            console.log('Loading data from:', this.config.dataUrl);
-            // Load data
-            this.data = await loadModelsData(this.config.dataUrl);
+            console.log('Loading data from:', this.config.dataBasePath);
+            // Load data (now loads from three separate files)
+            this.data = await loadModelsData(this.config.dataBasePath);
             console.log('Data loaded successfully:', this.data);
             
             // Initialize graph visualization
