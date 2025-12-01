@@ -153,7 +153,7 @@ Before submitting, verify:
 
 ```bash
 # 1. Clone your fork
-git clone https://github.com/YOUR_USERNAME/gemova.github.io
+git clone https://github.com/GeMOVA/gemova.github.io
 cd gemova.github.io
 
 # 2. Start local server

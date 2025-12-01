@@ -24,10 +24,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/your-username/generative-models-map.git"
+        "url": "https://github.com/GeMOVA/gemova.github.io"
     },
     "bugs": {
-        "url": "https://github.com/your-username/generative-models-map/issues"
+        "url": "https://github.com/GeMOVA/gemova.github.io/issues"
     },
-    "homepage": "https://github.com/your-username/generative-models-map#readme"
+    "homepage": "https://github.com/GeMOVA/gemova.github.io#readme"
 }
