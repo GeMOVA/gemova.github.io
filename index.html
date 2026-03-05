@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +30,7 @@
             }
         };
     </script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- polyfill.io removed — no longer needed for modern browsers -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <!-- Fonts -->
@@ -40,10 +40,10 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body class="bg-slate-900 text-slate-300 overflow-hidden">
+<body class="overflow-hidden">
     <div id="app" class="relative w-full h-screen">
         <!-- Loading Screen -->
-        <div id="loading" class="absolute inset-0 bg-slate-900 flex items-center justify-center z-50">
+        <div id="loading" class="absolute inset-0 flex items-center justify-center z-50">
             <div class="text-center">
                 <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-sky-500 mx-auto mb-4"></div>
                 <p class="text-slate-400">Loading models...</p>
@@ -59,7 +59,7 @@
                 <!-- Search -->
                 <div id="search-container" class="panel">
                     <input type="text" id="search" placeholder="Search for a model..." 
-                           class="bg-slate-900 border border-slate-600 rounded-md px-3 py-2 text-sm w-full">
+                           class="border border-slate-600 rounded-md px-3 py-2 text-sm w-full">
                 </div>
                 
                 <!-- Timeline -->
@@ -68,13 +68,13 @@
                         <span>Year Range</span>
                         <span id="year-range-label">2013 - 2024</span>
                     </label>
-                    <div class="relative">
+                    <div class="relative" style="height: 20px;">
                         <input type="range" id="year-min-slider" min="2013" max="2024" value="2013" 
-                               class="dual-range-slider absolute w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                               class="dual-range-slider absolute w-full appearance-none cursor-pointer">
                         <input type="range" id="year-max-slider" min="2013" max="2024" value="2024" 
-                               class="dual-range-slider absolute w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer">
-                        <div class="relative h-2 bg-slate-700 rounded-lg mt-2">
-                            <div id="year-range-track" class="absolute h-full bg-sky-500 rounded-lg"></div>
+                               class="dual-range-slider absolute w-full appearance-none cursor-pointer">
+                        <div class="absolute top-1/2 -translate-y-1/2 w-full h-[2px] rounded-full" style="background-color: rgba(100, 116, 139, 0.25);">
+                            <div id="year-range-track" class="absolute h-full rounded-full"></div>
                         </div>
                     </div>
                     <div class="flex justify-between text-xs text-slate-400 mt-1">
@@ -105,15 +105,21 @@
 
             <!-- Info Panel -->
             <div id="info-panel" class="info-panel"></div>
+
+            <!-- Minimap -->
+            <div id="minimap" class="absolute z-10">
+                <svg id="minimap-svg"></svg>
+            </div>
             
             <!-- Top Right Controls -->
-            <div class="absolute top-4 right-4 z-50 flex gap-2">
+            <div class="absolute top-4 right-4 z-50 flex gap-2 items-center">
                 <!-- Contribute Button -->
                 <a href="https://github.com/GeMOVA/gemova.github.io/blob/main/CONTRIBUTING.md" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   class="panel px-4 py-2 rounded-lg shadow-xl hover:bg-sky-600 transition-colors flex items-center gap-2 text-sm font-medium text-white bg-sky-500">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   id="add-model-btn"
+                   class="px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-medium transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
@@ -121,12 +127,12 @@
                 </a>
                 
                 <!-- Theme Toggle -->
-                <button id="theme-toggle" class="p-2 rounded-lg shadow-xl panel button-ripple">
-                    <svg id="theme-icon-dark" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button id="theme-toggle" class="p-1.5 rounded-md button-ripple flex items-center justify-center transition-all duration-200">
+                    <svg id="theme-icon-dark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                     </svg>
-                    <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg id="theme-icon-light" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>

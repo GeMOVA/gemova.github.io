@@ -1,6 +1,6 @@
 // Main application entry point
 import { GraphVisualization } from './graph.js';
-import { loadModelsData, setupEventListeners } from './utils.js';
+import { loadModelsData } from './utils.js';
 
 class GenerativeModelsApp {
     constructor() {

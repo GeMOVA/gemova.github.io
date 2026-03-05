@@ -20,6 +20,14 @@ class GraphVisualization {
         this.activeCategories = new Set(Object.keys(data.categories));
         this.activeLinkTypes = new Set(Object.keys(data.linkTypes));
         this.yearRange = { min: 2013, max: 2024 };
+        this.currentTransform = d3.zoomIdentity;
+        this.zoom = null;
+        
+        // Minimap
+        this.minimapSvg = null;
+        this.minimapG = null;
+        this.minimapViewport = null;
+        this.minimapScale = 0.1;
         
         // Initialize
         this.init();
@@ -45,6 +53,7 @@ class GraphVisualization {
 
     init() {
         this.setupSVG();
+        this.setupMinimap();
         this.setupSimulation();
         this.render();
         this.setupZoom();
@@ -80,6 +89,153 @@ class GraphVisualization {
         this.g = this.svg.append('g');
     }
 
+    setupMinimap() {
+        const minimapEl = document.getElementById('minimap');
+        const mmWidth = minimapEl.clientWidth;
+        const mmHeight = minimapEl.clientHeight;
+        
+        this.minimapSvg = d3.select('#minimap-svg')
+            .attr('width', mmWidth)
+            .attr('height', mmHeight);
+        
+        this.minimapG = this.minimapSvg.append('g');
+        
+        // Viewport rectangle (shows what the user currently sees)
+        this.minimapViewport = this.minimapSvg.append('rect')
+            .attr('class', 'minimap-viewport')
+            .attr('fill', 'rgba(59, 130, 246, 0.08)')
+            .attr('stroke', 'rgba(59, 130, 246, 0.4)')
+            .attr('stroke-width', 1)
+            .attr('rx', 2);
+        
+        // Click on minimap to pan
+        this.minimapSvg.on('click', (event) => {
+            const [mx, my] = d3.pointer(event);
+            this.panToMinimapPoint(mx, my);
+        });
+    }
+
+    updateMinimap() {
+        if (!this.minimapG || !this.data.nodes) return;
+        
+        const nodes = this.getFilteredData().nodes;
+        const links = this.getFilteredData().links;
+        
+        if (nodes.length === 0) return;
+        
+        // Calculate bounds of all nodes
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        nodes.forEach(d => {
+            if (d.x !== undefined && d.y !== undefined) {
+                minX = Math.min(minX, d.x - 30);
+                minY = Math.min(minY, d.y - 30);
+                maxX = Math.max(maxX, d.x + 30);
+                maxY = Math.max(maxY, d.y + 30);
+            }
+        });
+        
+        if (!isFinite(minX)) return;
+        
+        // Add padding
+        const pad = 80;
+        minX -= pad; minY -= pad; maxX += pad; maxY += pad;
+        
+        const graphW = maxX - minX;
+        const graphH = maxY - minY;
+        
+        const minimapEl = document.getElementById('minimap');
+        const mmW = minimapEl.clientWidth;
+        const mmH = minimapEl.clientHeight;
+        
+        const scale = Math.min(mmW / graphW, mmH / graphH);
+        const offsetX = (mmW - graphW * scale) / 2;
+        const offsetY = (mmH - graphH * scale) / 2;
+        
+        this.minimapG.attr('transform', `translate(${offsetX}, ${offsetY}) scale(${scale}) translate(${-minX}, ${-minY})`);
+        
+        // Draw links
+        const minimapLinks = this.minimapG.selectAll('.minimap-link')
+            .data(links, d => `${d.source.id}-${d.target.id}`);
+        
+        minimapLinks.exit().remove();
+        
+        minimapLinks.enter()
+            .append('line')
+            .attr('class', 'minimap-link')
+            .merge(minimapLinks)
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y)
+            .attr('stroke', 'rgba(100, 116, 139, 0.15)')
+            .attr('stroke-width', 1 / scale);
+        
+        // Draw nodes
+        const minimapNodes = this.minimapG.selectAll('.minimap-node')
+            .data(nodes, d => d.id);
+        
+        minimapNodes.exit().remove();
+        
+        minimapNodes.enter()
+            .append('circle')
+            .attr('class', 'minimap-node')
+            .merge(minimapNodes)
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', 3 / scale)
+            .attr('fill', d => this.data.categories[d.category].color);
+        
+        // Update viewport rectangle
+        this.updateMinimapViewport(minX, minY, graphW, graphH, scale, offsetX, offsetY, mmW, mmH);
+        
+        // Store for panToMinimapPoint
+        this._minimapTransform = { minX, minY, scale, offsetX, offsetY };
+    }
+
+    updateMinimapViewport(minX, minY, graphW, graphH, mmScale, offsetX, offsetY, mmW, mmH) {
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        const t = this.currentTransform;
+        
+        // The visible area in graph coordinates
+        const visX = (-t.x) / t.k;
+        const visY = (-t.y) / t.k;
+        const visW = width / t.k;
+        const visH = height / t.k;
+        
+        // Map to minimap coordinates
+        const rx = offsetX + (visX - minX) * mmScale;
+        const ry = offsetY + (visY - minY) * mmScale;
+        const rw = visW * mmScale;
+        const rh = visH * mmScale;
+        
+        this.minimapViewport
+            .attr('x', rx)
+            .attr('y', ry)
+            .attr('width', rw)
+            .attr('height', rh);
+    }
+
+    panToMinimapPoint(mx, my) {
+        if (!this._minimapTransform) return;
+        const { minX, minY, scale, offsetX, offsetY } = this._minimapTransform;
+        
+        // Convert minimap coords to graph coords
+        const gx = (mx - offsetX) / scale + minX;
+        const gy = (my - offsetY) / scale + minY;
+        
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        const t = this.currentTransform;
+        
+        // Centre the view on (gx, gy)
+        const newX = width / 2 - gx * t.k;
+        const newY = height / 2 - gy * t.k;
+        
+        this.svg.transition().duration(300)
+            .call(this.zoom.transform, d3.zoomIdentity.translate(newX, newY).scale(t.k));
+    }
+
     setupSimulation() {
         const width = this.container.clientWidth;
         const height = this.container.clientHeight;
@@ -100,16 +256,18 @@ class GraphVisualization {
     }
 
     setupZoom() {
-        const zoom = d3.zoom()
+        this.zoom = d3.zoom()
             .scaleExtent([0.3, 7])
             .on('zoom', (event) => {
+                this.currentTransform = event.transform;
                 this.g.attr('transform', event.transform);
+                this.updateMinimap();
             });
         
-        this.svg.call(zoom);
+        this.svg.call(this.zoom);
         
         // Initial zoom
-        this.svg.call(zoom.transform, d3.zoomIdentity.scale(0.8));
+        this.svg.call(this.zoom.transform, d3.zoomIdentity.scale(0.8));
     }
 
     render() {
@@ -270,6 +428,8 @@ class GraphVisualization {
         if (this.node) {
             this.node.attr('transform', d => `translate(${d.x || 0},${d.y || 0})`);
         }
+        
+        this.updateMinimap();
     }
 
     getFilteredData() {
@@ -312,12 +472,12 @@ class GraphVisualization {
         if (node.papers && node.papers.length > 0) {
             papersHTML = node.papers.map(paper => `
                 <a href="${paper.url}" target="_blank" rel="noopener noreferrer" 
-                   class="flex items-center gap-2 text-sky-500 hover:text-sky-600 hover:underline transition-colors duration-200 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   class="group flex items-start gap-2 py-1.5 text-slate-400 hover:text-sky-400 transition-colors duration-200 text-xs leading-relaxed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 flex-shrink-0 mt-0.5 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <span>${paper.title} (${paper.year})</span>
+                    <span>${paper.title} <span class="opacity-50">(${paper.year})</span></span>
                 </a>
             `).join('');
         }
@@ -326,14 +486,16 @@ class GraphVisualization {
         let codeHTML = '';
         if (node.code && node.code.length > 0) {
             codeHTML = `
-                <div class="mt-4">
-                    <h3 class="font-semibold mb-2">Code</h3>
-                    <div class="flex flex-wrap gap-2">
+                <div class="info-section">
+                    <h3 class="info-section-title">Code</h3>
+                    <div class="flex flex-wrap gap-1.5">
                         ${node.code.map(code => `
                             <a href="${code.url}" target="_blank" 
-                               class="px-3 py-1 bg-slate-700 rounded text-xs hover:bg-slate-600 transition-colors">
-                                ${code.language}
-                            </a>
+                               class="px-2 py-0.5 rounded text-xs transition-colors"
+                               style="background: rgba(100,116,139,0.1); color: #8b949e;"
+                               onmouseover="this.style.background='rgba(100,116,139,0.2)'"
+                               onmouseout="this.style.background='rgba(100,116,139,0.1)'"
+                            >${code.language}</a>
                         `).join('')}
                     </div>
                 </div>
@@ -344,59 +506,70 @@ class GraphVisualization {
         let contributionsHTML = '';
         if (node.keyContributions && node.keyContributions.length > 0) {
             contributionsHTML = `
-                <div class="mt-4">
-                    <h3 class="font-semibold mb-2">Key Contributions</h3>
-                    <ul class="list-disc list-inside space-y-1 text-sm text-slate-400">
-                        ${node.keyContributions.map(c => `<li>${processMathInText(c)}</li>`).join('')}
+                <div class="info-section">
+                    <h3 class="info-section-title">Key Contributions</h3>
+                    <ul class="space-y-1.5 text-xs text-slate-400 leading-relaxed">
+                        ${node.keyContributions.map(c => `
+                            <li class="flex items-start gap-2">
+                                <span class="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style="background: ${category.color}; opacity: 0.5;"></span>
+                                <span>${processMathInText(c)}</span>
+                            </li>
+                        `).join('')}
                     </ul>
                 </div>
             `;
         }
         
         panel.innerHTML = `
-            <button id="close-panel" class="absolute top-4 right-4 text-slate-400 hover:text-white transition z-10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button id="close-panel" class="absolute top-5 right-5 z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
             
-            <div class="flex flex-col gap-4 pt-8">
-                <div>
-                    <h2 class="text-2xl font-bold text-white">${node.fullName}</h2>
-                    <p class="text-slate-400">${node.name} • ${node.year}</p>
+            <div class="flex flex-col" style="padding: 1.5rem;">
+                <!-- Header -->
+                <div style="padding-bottom: 1.25rem; border-bottom: 1px solid rgba(100,116,139,0.12);">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${category.color};"></span>
+                        <span style="color: ${category.color}; font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.03em; opacity: 0.8;">${category.name}</span>
+                        <span style="color: rgba(139,148,158,0.3); font-size: 0.6875rem;">•</span>
+                        <span style="color: rgba(139,148,158,0.5); font-size: 0.6875rem;">${node.year}</span>
+                    </div>
+                    <h2 class="text-white" style="font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.3;">${node.fullName}</h2>
+                    <p style="color: rgba(139,148,158,0.5); font-size: 0.75rem; margin-top: 2px;">${node.name}</p>
                 </div>
                 
-                <div>
-                    <span class="text-sm font-semibold px-3 py-1 rounded-full text-white" 
-                          style="background-color: ${category.color};">
-                        ${category.name}
-                    </span>
+                <!-- Description -->
+                <div class="info-section">
+                    <p style="color: #8b949e; font-size: 0.8125rem; line-height: 1.7;">${processMathInText(node.description)}</p>
                 </div>
                 
-                <p class="text-slate-300 leading-relaxed">${processMathInText(node.description)}</p>
-                
-                <div class="bg-slate-900/50 p-4 rounded-lg border-l-4" 
-                     style="border-color: ${category.color};">
-                    <h3 class="font-semibold text-white mb-2">Main Idea</h3>
-                    <p class="text-sm text-slate-400">${processMathInText(node.mainIdea)}</p>
+                <!-- Main Idea -->
+                <div class="info-section" style="padding: 0.875rem; border-radius: 0.5rem; border-left: 2px solid ${category.color}; background: rgba(100,116,139,0.06);">
+                    <h3 class="info-section-title" style="margin-bottom: 0.375rem;">Main Idea</h3>
+                    <p style="color: #6e7681; font-size: 0.75rem; line-height: 1.7;">${processMathInText(node.mainIdea)}</p>
                 </div>
                 
                 ${contributionsHTML}
                 
-                <div>
-                    <h3 class="font-semibold text-white mb-3">Publications</h3>
-                    <div class="flex flex-col gap-3">${papersHTML}</div>
+                <!-- Publications -->
+                <div class="info-section">
+                    <h3 class="info-section-title">Publications</h3>
+                    <div class="flex flex-col">${papersHTML}</div>
                 </div>
                 
                 ${codeHTML}
                 
                 ${node.tags ? `
-                    <div class="flex flex-wrap gap-2 mt-4">
-                        ${node.tags.map(tag => `
-                            <span class="text-xs px-2 py-1 bg-slate-800 rounded text-slate-400">
-                                #${tag}
-                            </span>
-                        `).join('')}
+                    <div class="info-section" style="padding-top: 0.75rem; border-top: 1px solid rgba(100,116,139,0.08);">
+                        <div class="flex flex-wrap gap-1.5">
+                            ${node.tags.map(tag => `
+                                <span style="font-size: 0.6875rem; padding: 0.125rem 0.5rem; border-radius: 9999px; background: rgba(100,116,139,0.08); color: rgba(139,148,158,0.6);">
+                                    ${tag}
+                                </span>
+                            `).join('')}
+                        </div>
                     </div>
                 ` : ''}
             </div>
@@ -560,8 +733,7 @@ class GraphVisualization {
             return isLightMode ? '#64748b' : originalColor;
         });
         
-        // Update SVG background
-        this.svg.style('background-color', isLightMode ? '#f8fafc' : '#0f172a');
+    // SVG background is handled by CSS on #graph-container
     }
     
     adjustColorForLightMode(color) {
